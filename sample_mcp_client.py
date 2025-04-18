@@ -40,15 +40,10 @@ class MCPClient:
         self._cleanup_lock: asyncio.Lock = asyncio.Lock()
 
         # 初始化客户端
-        if model_type == "openai":
-            self.client = AsyncOpenAI(api_key=api_key)
-        elif model_type == "deepseek":
-            self.client = AsyncOpenAI(
+        self.client = AsyncOpenAI(
                 api_key=api_key,
-                base_url=base_url
+                base_url=None if model_type == "openai" else base_url,
             )
-        else:
-            raise ValueError(f"[ERR]: 不支持的模型类型: {model_type}")
         
     @staticmethod
     def parse_arguments(args: List[str]) -> StdioServerParameters:
