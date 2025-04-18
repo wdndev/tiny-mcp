@@ -41,9 +41,9 @@ class MCPClient:
 
         # 初始化客户端
         self.client = AsyncOpenAI(
-                api_key=api_key,
-                base_url=None if model_type == "openai" else base_url,
-            )
+            api_key=api_key,
+            base_url=None if model_type == "openai" else base_url,
+        )
         
     @staticmethod
     def parse_arguments(args: List[str]) -> StdioServerParameters:
@@ -226,8 +226,8 @@ async def main():
     except ValueError as e:
         print(f"[ERR] 参数错误: {str(e)}")
         print("使用方法:")
-        print("旧方式: python mcp_client.py <服务器脚本路径>")
-        print("新方式: python mcp_client.py <服务器标识符> <配置文件路径>")
+        print("方式 1: python mcp_client.py <服务器脚本路径>")
+        print("方式 2: python mcp_client.py <服务器标识符> <配置文件路径>")
         sys.exit(1)
 
     client = MCPClient(
