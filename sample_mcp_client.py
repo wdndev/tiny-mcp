@@ -34,8 +34,10 @@ class MCPClient:
 
         # 初始化会话参数
         self.session: Optional[ClientSession] = None
+        self.stdio_transport = None  # 新增传输层引用
         self.exit_stack = AsyncExitStack()
         self.available_tools: List[Dict[str, Any]] = []
+        self._cleanup_lock: asyncio.Lock = asyncio.Lock()
 
         # 初始化客户端
         if model_type == "openai":
@@ -47,28 +49,63 @@ class MCPClient:
             )
         else:
             raise ValueError(f"[ERR]: 不支持的模型类型: {model_type}")
-    async def connect_to_server(self, server_script_path: str):
+        
+    @staticmethod
+    def parse_arguments(args: List[str]) -> StdioServerParameters:
+        """
+        静态方法：解析命令行参数并返回服务器参数
+        :param args: 命令行参数列表（不包含脚本名称）
+        :return: StdioServerParameters 对象
+        """
+        if len(args) == 1:
+            # 方式1：直接指定服务器脚本
+            server_script_path = args[0]
+            if not server_script_path.endswith(('.py', '.js')):
+                raise ValueError("[ERR] 服务器脚本必须是 .py 或 .js 文件")
+            
+            command = "python" if server_script_path.endswith('.py') else "node"
+            return StdioServerParameters(
+                command=command,
+                args=[server_script_path],
+                env=None
+            )
+        elif len(args) == 2:
+            # 方式2：通过配置文件指定
+            server_identifier, config_path = args[0], args[1]
+            
+            # 读取配置文件
+            try:
+                with open(config_path, 'r') as f:
+                    config = json.load(f)
+            except Exception as e:
+                raise ValueError(f"配置文件读取失败: {str(e)}")
+            
+            # 解析服务器配置
+            mcp_servers = config.get('mcpServers', {})
+            server_config = mcp_servers.get(server_identifier)
+            if not server_config:
+                raise ValueError(f"未找到服务器标识符: {server_identifier}")
+            
+            if not all(key in server_config for key in ['command', 'args']):
+                raise ValueError("服务器配置缺少必要字段（command/args）")
+            
+            return StdioServerParameters(
+                command=server_config['command'],
+                args=server_config['args'],
+                env=None
+            )
+        else:
+            raise ValueError("参数数量错误")
+    async def connect_to_server(self, server_params: StdioServerParameters):
         """
         连接到MCP服务器
         :param server_script_path: 服务器脚本路径（.py或.js）
         """
-        # 验证文件类型
-        if not server_script_path.endswith(('.py', '.js')):
-            raise ValueError("[ERR]: 服务器脚本必须是.py或.js文件")
-
-        # 构建执行命令
-        command = "python" if server_script_path.endswith('.py') else "node"
-        server_params = StdioServerParameters(
-            command=command,
-            args=[server_script_path],
-            env=None
-        )
-
         # 建立传输层连接
-        stdio_transport = await self.exit_stack.enter_async_context(
+        self.stdio_transport = await self.exit_stack.enter_async_context(
             stdio_client(server_params)
         )
-        stdio_reader, stdio_writer = stdio_transport
+        stdio_reader, stdio_writer = self.stdio_transport
 
         # 初始化客户端会话
         self.session = await self.exit_stack.enter_async_context(
@@ -135,7 +172,7 @@ class MCPClient:
                         "role": "tool",
                         "content": str(result.content),
                         "tool_call_id": tool_call.id,
-                        "name": tool_name  # 所有服务商统一添加name字段
+                        "name": tool_name 
                     }
                     messages.append(tool_response)
 
@@ -175,13 +212,27 @@ class MCPClient:
                 print(f"\n[SYS]: 错误发生：{str(e)}")
 
     async def cleanup(self):
-        """清理资源"""
-        await self.exit_stack.aclose()
+        """ 清理资源
+        """
+        async with self._cleanup_lock:
+            try:
+                await self.exit_stack.aclose()
+                self.session = None
+                self.stdio_context = None
+            except Exception as e:
+                print(f"Error during cleanup of server: {e}")
+
 
 async def main():
 
-    if len(sys.argv) < 2:
-        print("使用方法: python client.py <服务器脚本路径>")
+    try:
+        # 通过类方法解析参数
+        server_params = MCPClient.parse_arguments(sys.argv[1:])
+    except ValueError as e:
+        print(f"[ERR] 参数错误: {str(e)}")
+        print("使用方法:")
+        print("旧方式: python mcp_client.py <服务器脚本路径>")
+        print("新方式: python mcp_client.py <服务器标识符> <配置文件路径>")
         sys.exit(1)
 
     client = MCPClient(
@@ -192,8 +243,13 @@ async def main():
     )
 
     try:
-        await client.connect_to_server(sys.argv[1])
+        # server_params = client.parse_arguments(sys.argv[1:])
+        await client.connect_to_server(server_params)
         await client.chat_loop()
+    except ValueError as e:
+        print(f"[ERR] 参数错误: {str(e)}")
+    except Exception as e:
+        print(f"\n[ERR] 运行时错误: {str(e)}")
     finally:
         await client.cleanup()
 
