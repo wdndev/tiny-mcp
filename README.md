@@ -2,8 +2,13 @@
 
 MCP Client 是一个基于 Model Context Protocol 的 Node.js 客户端实现（使用 Function Calling），它允许您的应用连接到各种 MCP 服务器，并通过大语言模型（LLM）与这些服务器交互。MCP（模型上下文协议）是一个开放协议，用于标准化应用程序向 LLM 提供上下文的方式。
 
+## 2.系统要求
 
-## 2.安装和配置
+- 建议Python版本为 `3.12` 以上
+- LLM API 密钥
+
+
+## 3.安装和配置
 
 - 克隆仓库
 
@@ -48,7 +53,7 @@ LLM_MODEL_NAME = "deepseek-chat"
 
 ```
 
-## 3.使用方法
+## 4.使用方法
 
 激活uv环境
 
@@ -113,7 +118,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 }
 ```
 
-## 4.运行
+## 5.运行
 
 直接指定服务器脚本路径运行
 
@@ -165,3 +170,24 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 
 如果您计划参观天安门，建议携带雨具，并注意地面湿滑。如果雨势较大，可能会影响游览体验，建议根据天气情况灵活调整行程。
 ```
+
+## 6.工作原理
+
+![alt text](docs/image/image.png)
+
+1. 服务器连接：客户端连接到指定的 MCP 服务器
+2. 工具发现：自动获取服务器提供的可用工具列表
+3. 查询处理：
+   - 将用户查询发送给 LLM
+   - LLM 决定是否需要使用工具
+   - 如果需要，客户端通过服务器执行工具调用
+   - 将工具结果返回给 LLM
+   - LLM 提供最终回复
+4. 交互式循环：用户可以不断输入查询，直到输入"quit"退出
+
+## 7.参考文档
+
+- [MCP Docs](https://modelcontextprotocol.io)
+- [MCP Docs cn](https://mcp-docs.cn)
+- [UV Docs](https://hellowac.github.io/uv-zh-cn)
+
