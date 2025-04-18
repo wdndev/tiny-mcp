@@ -1,0 +1,34 @@
+{
+    "mcpServers": {
+      "get_current_time": {
+        "name": "时间",
+        "type": "stdio",
+        "description": "获取时间",
+        "isActive": true,
+        "registryUrl": "",
+        "command": "uv",
+        "args": [
+          "--directory",
+          "E:/04Code/llm/mcp_code/tiny-mcp-demo/services",
+          "run",
+          "time_service.py"
+        ]
+      },
+      "get_weather": {
+        "name": "天气",
+        "type": "stdio",
+        "description": "获取国内天气",
+        "isActive": true,
+        "registryUrl": "",
+        "command": "uv",
+        "args": [
+          "--directory",
+          "E:/04Code/llm/mcp_code/tiny-mcp-demo/services",
+          "run",
+          "weather_service_zh.py"
+        ]
+      }
+    },
+    "defaultServer": "get_current_time",
+    "system": "自定义系统提示词"
+}
