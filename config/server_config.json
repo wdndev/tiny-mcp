@@ -7,7 +7,7 @@
         "command": "uv",
         "args": [
           "--directory",
-          "E:/04Code/llm/mcp_code/tiny-mcp-demo/services",
+          "E:/04Code/llm/tiny-mcp/services",
           "run",
           "time_service.py"
         ]
@@ -19,7 +19,7 @@
         "command": "uv",
         "args": [
           "--directory",
-          "E:/04Code/llm/mcp_code/tiny-mcp-demo/services",
+          "E:/04Code/llm/tiny-mcp/services",
           "run",
           "weather_service_zh.py"
         ]

@@ -144,7 +144,7 @@ async def mcp_lifespan(server: FastMCP) -> AsyncIterator[MCPContext]:
     finally:
         print("清理资源")
 
-# mcp dev E:/04Code/llm/mcp_code/tiny-mcp-demo/services/weather_service.py
+# mcp dev E:/04Code/llm/tiny-mcp/services/weather_service_zh.py
 mcp = FastMCP(
     name="天气查询",
     instructions="""

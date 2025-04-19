@@ -95,7 +95,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
         "command": "uv",
         "args": [
           "--directory",
-          "E:/04Code/llm/mcp_code/tiny-mcp-demo/services",
+          "E:/04Code/llm/tiny-mcp-demo/services",
           "run",
           "time_service.py"
         ]
@@ -107,7 +107,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
         "command": "uv",
         "args": [
           "--directory",
-          "E:/04Code/llm/mcp_code/tiny-mcp-demo/services",
+          "E:/04Code/llm/tiny-mcp-demo/services",
           "run",
           "weather_service_zh.py"
         ]
@@ -123,7 +123,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 直接指定服务器脚本路径运行
 
 ```Bash
-(tiny-mcp) PS tiny-mcp> python sample_mcp_client.py E:/04Code/llm/mcp_code/tiny-mcp-demo/services/weather_service_zh.py
+(tiny-mcp) PS tiny-mcp> python sample_mcp_client.py services/weather_service_zh.py
 [SYS]: 成功连接服务器，可用工具: ['get_weather']
 [SYS]: MCP客户端已启动！
 [SYS]: 输入自然语言查询开始交互（输入 'quit' 退出）
@@ -145,7 +145,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 使用配置文件
 
 ```Bash
-(tiny-mcp) PS tiny-mcp> python sample_mcp_client.py get_weather config/mcp_config.json
+(tiny-mcp) PS tiny-mcp> python sample_mcp_client.py get_weather config/server_config.json
 [SYS]: 成功连接服务器，可用工具: ['get_weather']
 [SYS]: MCP客户端已启动！
 [SYS]: 输入自然语言查询开始交互（输入 'quit' 退出）
