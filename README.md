@@ -2,11 +2,27 @@
 
 MCP Client 是一个基于 Model Context Protocol 的 Node.js 客户端实现（使用 Function Calling），它允许您的应用连接到各种 MCP 服务器，并通过大语言模型（LLM）与这些服务器交互。MCP（模型上下文协议）是一个开放协议，用于标准化应用程序向 LLM 提供上下文的方式。
 
-## 2.系统要求
+## 2.系统 & 目录
 
+### 2.1 系统要求
 - 建议Python版本为 `3.12` 以上
 - LLM API 密钥
 
+### 2.2 目录结构
+
+```bash
+├───.venv                 # uv 虚拟环境, （uv建立）
+├───config                # MCP Server 配置文件
+├───docs                  # 文档
+├───mcp_client            # MCP 客户端
+├───services              # MCP 服务器
+├───.env.example           # 示例环境变量文件
+├───mcp_client_main       # MCP 客户端主程序，依赖于 mcp_client 代码， 支持多MCP服务器
+├───sample_mcp_client.py  # Sample MCP Client，只能支持单个 MCP 服务器
+├───.python-version       # uv Python版本
+├───pyproject.toml        # uv 环境依赖
+└───uv.lock               # uv 锁文件
+```
 
 ## 3.安装和配置
 
