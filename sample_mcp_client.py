@@ -40,7 +40,7 @@ class MCPClient:
         self._cleanup_lock: asyncio.Lock = asyncio.Lock()
 
         # 初始化客户端
-        self.client = AsyncOpenAI(
+        self.llm_client = AsyncOpenAI(
             api_key=api_key,
             base_url=None if model_type == "openai" else base_url,
         )
@@ -131,7 +131,7 @@ class MCPClient:
 
         while True:
             try:
-                response = await self.client.chat.completions.create(
+                response = await self.llm_client.chat.completions.create(
                     model=self.model_name,
                     messages=messages,
                     tools=self.available_tools,
@@ -152,6 +152,7 @@ class MCPClient:
                     if isinstance(tool_call.function.arguments, dict):
                         tool_args = tool_call.function.arguments
                     else:
+                        
                         try:
                             tool_args = json.loads(tool_call.function.arguments)
                         except json.JSONDecodeError:
@@ -160,6 +161,7 @@ class MCPClient:
                     # 执行工具调用
                     result = await self.session.call_tool(tool_name, tool_args)
                     print(f"[LOG]: 调用工具 [{tool_name}] 参数: {tool_args}")
+                    print(f"[LOG]: 工具响应: {result.content}")
                     responses.append(f"[调用工具] {tool_name} 参数: {tool_args}")
 
                     # 通用工具响应格式
@@ -224,12 +226,15 @@ async def main():
         # 通过类方法解析参数
         server_params = MCPClient.parse_arguments(sys.argv[1:])
     except ValueError as e:
-        print(f"[ERR] 参数错误: {str(e)}")
+        print(f"[ERR]: 参数错误: {str(e)}")
         print("使用方法:")
         print("方式 1: python mcp_client.py <服务器脚本路径>")
         print("方式 2: python mcp_client.py <服务器标识符> <配置文件路径>")
         sys.exit(1)
 
+    print("[SYS]: LLM_MODEL_TYPE: ", os.getenv("LLM_MODEL_TYPE", ""))
+    print("[SYS]:    LLM_API_URL: ", os.getenv("LLM_API_URL", ""))
+    print("[SYS]: LLM_MODEL_NAME: ", os.getenv("LLM_MODEL_NAME", ""))
     client = MCPClient(
         model_type=os.getenv("LLM_MODEL_TYPE", ""),
         api_key=os.getenv("LLM_API_KEY", ""),
