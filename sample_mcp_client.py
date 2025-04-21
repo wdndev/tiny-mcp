@@ -226,7 +226,6 @@ class MCPClient:
             except Exception as e:
                 print(f"Error during cleanup of server: {e}")
 
-
 async def main():
 
     try:
@@ -250,7 +249,6 @@ async def main():
     )
 
     try:
-        # server_params = client.parse_arguments(sys.argv[1:])
         await client.connect_to_server(server_params)
         await client.chat_loop()
     except ValueError as e:
