@@ -11,3 +11,8 @@ wheels/
 
 # .env files
 .env
+
+assert/*
+mcp_chatbot_app.py
+sample_mcp_client_stream.py
+sample_mcp_client.py

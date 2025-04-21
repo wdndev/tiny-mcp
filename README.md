@@ -116,7 +116,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
         "command": "uv",
         "args": [
           "--directory",
-          "E:/04Code/llm/tiny-mcp-demo/services",
+          "E:/04Code/llm/tiny-mcp/services",
           "run",
           "time_service.py"
         ]
@@ -128,7 +128,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
         "command": "uv",
         "args": [
           "--directory",
-          "E:/04Code/llm/tiny-mcp-demo/services",
+          "E:/04Code/llm/tiny-mcp/services",
           "run",
           "weather_service_zh.py"
         ]
@@ -145,20 +145,29 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 
 ```Bash
 (tiny-mcp) PS tiny-mcp> python sample_mcp_client.py services/weather_service_zh.py
+[SYS]: LLM_MODEL_TYPE:  deepseek
+[SYS]:    LLM_API_URL:  https://api.deepseek.com
+[SYS]: LLM_MODEL_NAME:  deepseek-chat
 [SYS]: 成功连接服务器，可用工具: ['get_weather']
 [SYS]: MCP客户端已启动！
 [SYS]: 输入自然语言查询开始交互（输入 'quit' 退出）
-[USR]: 北京天气如何？适合去天安门吗？
-[LOG]: 调用工具 [get_weather] 参数: {'location': '北京'}
+[USR]: 珠海的天气怎么样？可以出去看海吗？
 
-[LLM]: 北京的天气是多云，温度为29°C，体感温度26°C，北风3级，湿度较低（18%），能见度良好（21公里）。
+[LOG] Call LLM Messages: [{'role': 'user', 'content': '珠海的天气怎么样？可以出去看海吗？'}]
+[LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'get_weather', 'description': '查询天气情况', 'parameters': {'properties': {'location': {'title': 'Location', 'type': 'string'}}, 'required': ['location'], 'title': 'get_weatherArguments', 'type': 'object'}}}]
+[LLM]: ChatCompletionMessage(content='', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=[ChatCompletionMessageToolCall(id='call_0_4e1586a5-a278-4e4a-bfa0-8117c3c35b38', function=Function(arguments='{"location":"珠海"}', name='get_weather'), type='function', index=0)])
 
-这样的天气适合去天安门游玩，但建议注意防晒和补水，因为湿度较低可能会感觉干燥。 
+[LOG]: 调用工具 [get_weather] 参数: {'location': '珠海'}
+[LOG]: 工具响应: [TextContent(type='text', text='中国广东省珠海市天气查询成功：\n天气情况：多云\n温度：28°C\n体感温度：29°C\n风向：东南风\n风力等级: 3级\n风速：16公里/小时\n相对湿度：74%\n气压: 1008百帕\n过去一小时降水量:0.0毫米\n能见度: 30 公里\n', annotations=None)]
 
-[USR]: 现在沈阳的天气怎么样呢？能出去踢足球吗？
-[LOG]: 调用工具 [get_weather] 参数: {'location': '沈阳'}
+[LOG] Call LLM Messages: [{'role': 'user', 'content': '珠海的天气怎么样？可以出去看海吗？'}, ChatCompletionMessage(content='', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=[ChatCompletionMessageToolCall(id='call_0_4e1586a5-a278-4e4a-bfa0-8117c3c35b38', function=Function(arguments='{"location":"珠海"}', name='get_weather'), type='function', index=0)]), {'role': 'tool', 'content': "[TextContent(type='text', text='中国广东省珠海市天气查询成功：\\n天气情况：多云\\n温度：28°C\\n体感温度：29°C\\n风向：东 南风\\n风力等级: 3级\\n风速：16公里/小时\\n相对湿度：74%\\n气压: 1008百帕\\n过去一小时降水量:0.0毫米\\n能见度: 30 公里\\n', annotations=None)]", 'tool_call_id': 'call_0_4e1586a5-a278-4e4a-bfa0-8117c3c35b38', 'name': 'get_weather'}]
+[LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'get_weather', 'description': '查询天气情况', 'parameters': {'properties': {'location': {'title': 'Location', 'type': 'string'}}, 'required': ['location'], 'title': 'get_weatherArguments', 'type': 'object'}}}]
+[LLM]: ChatCompletionMessage(content='珠海目前的天气是多云，温度28°C，体感温度29°C，风力3级，风速16公里/小时，相对湿度74%。能见度为30公里，非常适合外出。\n\n这样的天气非常适合去看海， 建议带上防晒用品，享受海边的风景！', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None)
 
-[LLM]: 沈阳目前有小雨，气温为15°C，体感温度14°C，西南风2级，风速8公里/小时，相对湿度74%。由于有小雨，场地可能会比较湿滑，不太适合踢足球。建议等天气转晴后再安排户外活动。 
+
+[LLM]: 珠海目前的天气是多云，温度28°C，体感温度29°C，风力3级，风速16公里/小时，相对湿度74%。能见度为30公里，非常适合外出。
+
+这样的天气非常适合去看海，建议带上防晒用品，享受海边的风景！ 
 
 [USR]: quit
 ```

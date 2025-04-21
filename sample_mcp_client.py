@@ -34,7 +34,7 @@ class MCPClient:
 
         # 初始化会话参数
         self.session: Optional[ClientSession] = None
-        self.stdio_transport = None  # 新增传输层引用
+        self.stdio_transport = None
         self.exit_stack = AsyncExitStack()
         self.available_tools: List[Dict[str, Any]] = []
         self._cleanup_lock: asyncio.Lock = asyncio.Lock()
@@ -91,6 +91,7 @@ class MCPClient:
             )
         else:
             raise ValueError("参数数量错误")
+
     async def connect_to_server(self, server_params: StdioServerParameters):
         """
         连接到MCP服务器
@@ -131,6 +132,9 @@ class MCPClient:
 
         while True:
             try:
+                print("[LOG] Call LLM Messages:", messages)
+                print("[LOG] Call LLM Tools:", self.available_tools)
+
                 response = await self.llm_client.chat.completions.create(
                     model=self.model_name,
                     messages=messages,
@@ -139,6 +143,7 @@ class MCPClient:
                 )
 
                 message = response.choices[0].message
+                print(f"[LLM]: {message} \n")
                 messages.append(message)
 
                 if not message.tool_calls:
@@ -161,7 +166,7 @@ class MCPClient:
                     # 执行工具调用
                     result = await self.session.call_tool(tool_name, tool_args)
                     print(f"[LOG]: 调用工具 [{tool_name}] 参数: {tool_args}")
-                    print(f"[LOG]: 工具响应: {result.content}")
+                    print(f"[LOG]: 工具响应: {result.content}\n")
                     responses.append(f"[调用工具] {tool_name} 参数: {tool_args}")
 
                     # 通用工具响应格式
@@ -193,6 +198,8 @@ class MCPClient:
                     None,  # 使用默认执行器
                     lambda: input("[USR]: ").strip()
                 )
+
+                print()     # 添加空行
                 
                 if not query:
                     continue
@@ -200,7 +207,7 @@ class MCPClient:
                     break
 
                 response = await self.process_query(query)
-                print(f"\n[LLM]: {response} \n")
+                print(f"[LLM]: {response} \n")
 
             except (KeyboardInterrupt, EOFError):
                 print("\n[SYS]: 检测到退出信号，正在关闭...")

@@ -2,11 +2,7 @@ import asyncio
 import json
 from loguru import logger
 
-from mcp_client.chatbot_config import Configuration
-from mcp_client.chat_session import ChatSession
-from mcp_client.llm_service import LLMService
-from mcp_client.mcp_server import MCPServer
-
+from mcp_chatbot import Configuration, ChatSession, LLMService, MCPServer
 
 async def main() -> None:
     """主入口函数
