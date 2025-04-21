@@ -155,10 +155,11 @@ mcp = FastMCP(
 
 @mcp.tool(name="get_weather", description="查询天气情况")
 async def get_weather(location: str, ctx: Context) -> str:
-    """查询天气情况
+    """查询天气情况, 
     :param location: 城市名称（支持中文或拼音）
     :return: 天气情况（JSON格式）
     """
+    location = location.replace("市", "")
     weather_cxt = ctx.request_context.lifespan_context.weather_cxt
     return weather_cxt.get_weather(location)
 

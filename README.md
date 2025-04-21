@@ -220,4 +220,6 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 - [MCP Docs](https://modelcontextprotocol.io)
 - [MCP Docs cn](https://mcp-docs.cn)
 - [UV Docs](https://hellowac.github.io/uv-zh-cn)
+- [飞书 MCP中文社区](https://larkcommunity.feishu.cn/wiki/FvgIwbijgiXmh8k0Jk2c7nOznXQ)
+- [MCP服务器列表](https://github.com/punkpeye/awesome-mcp-server)
 
