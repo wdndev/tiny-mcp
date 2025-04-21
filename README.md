@@ -2,7 +2,7 @@
 
 MCP Client 是一个基于 Model Context Protocol 的 Python 客户端实现（使用 Function Calling 和 prompt 两种方式），它允许您的应用连接到各种 MCP 服务器，并通过大语言模型（LLM）与这些服务器交互。MCP（模型上下文协议）是一个开放协议，用于标准化应用程序向 LLM 提供上下文的方式。
 
-- `sample_mcp_client.py` : 基于 prompt 模式实现 MCP Client, 支持多MCP服务器运行，但只能支持配置文件运行；
+- `simple_mcp_client.py` : 基于 prompt 模式实现 MCP Client, 支持多MCP服务器运行，但只能支持配置文件运行；
 - `mcp_client_main.py` : 基于 Function Calling 模式实现 MCP Client, 只能支持单个 MCP 服务器，支持配置文件和直接调用服务器运行；
 
 ## 2.系统 & 目录
@@ -23,7 +23,7 @@ MCP Client 是一个基于 Model Context Protocol 的 Python 客户端实现（�
 ├───services              # MCP 服务器
 ├───.env.example          # 示例环境变量文件
 ├───mcp_client_main.py    # MCP 客户端主程序，依赖于 mcp_client 代码， 支持多MCP服务器， prompt 模式开发
-├───sample_mcp_client.py  # Sample MCP Client，只能支持单个 MCP 服务器， Function Calling 模式开发
+├───simple_mcp_client.py  # simple MCP Client，只能支持单个 MCP 服务器， Function Calling 模式开发
 ├───.python-version       # uv Python版本
 ├───pyproject.toml        # uv 环境依赖
 └───uv.lock               # uv 锁文件
@@ -93,7 +93,7 @@ source .venv/bin/activate
 #### （1）直接指定服务器脚本路径
 
 ```Bash
-python sample_mcp_client.py <服务器脚本路径>
+python simple_mcp_client.py <服务器脚本路径>
 ```
 
 其中`<服务器脚本路径>`是指向 MCP 服务器脚本的路径，可以是 JavaScript (.js) 或 Python (.py) 文件。
@@ -101,7 +101,7 @@ python sample_mcp_client.py <服务器脚本路径>
 #### （2）使用配置文件
 
 ```Bash
-python sample_mcp_client.py <服务器标识符> <配置文件路径>
+python simple_mcp_client.py <服务器标识符> <配置文件路径>
 ```
 
 其中`<服务器标识符>`是配置文件中定义的服务器名称，`<配置文件路径>`是包含服务器定义的 JSON 文件的路径。
@@ -144,7 +144,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 直接指定服务器脚本路径运行
 
 ```Bash
-(tiny-mcp) PS tiny-mcp> python sample_mcp_client.py services/weather_service_zh.py
+(tiny-mcp) PS tiny-mcp> python simple_mcp_client.py services/weather_service_zh.py
 [SYS]: LLM_MODEL_TYPE:  deepseek
 [SYS]:    LLM_API_URL:  https://api.deepseek.com
 [SYS]: LLM_MODEL_NAME:  deepseek-chat
@@ -175,7 +175,7 @@ python sample_mcp_client.py <服务器标识符> <配置文件路径>
 使用配置文件
 
 ```Bash
-(tiny-mcp) PS tiny-mcp> python sample_mcp_client.py get_weather config/server_config.json
+(tiny-mcp) PS tiny-mcp> python simple_mcp_client.py get_weather config/server_config.json
 [SYS]: 成功连接服务器，可用工具: ['get_weather']
 [SYS]: MCP客户端已启动！
 [SYS]: 输入自然语言查询开始交互（输入 'quit' 退出）

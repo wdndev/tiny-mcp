@@ -1,0 +1,20 @@
+
+我想开发一个 Python 版的 MCP Clinet ，下面有一些参考材料，包括 MCP 基础介绍、MCP 核心架构介绍、MCP Clinet 开发教程，
+请你根据这些参考材料帮我开发一个 MCP Client，注意增加完善的中文注释，以及在开发完成后编写一个完善的中文 Readme 说明文档。
+
+## MCP 基础介绍
+
+粘贴 https://modelcontextprotocol.io/introduction 的内容。
+
+## MCP 核心架构介绍
+
+粘贴 https://modelcontextprotocol.io/docs/concepts/architecture 的内容。
+
+## MCP Client 开发教程
+
+粘贴 https://modelcontextprotocol.io/quickstart/client 的内容。
+
+## 注意
+
+- 使用 openai 的 SDK 替换 @anthropic-ai/sdk ，这样可以支持更多的模型，兼容性更好
+- 你不要指定依赖的版本，如果遇到安装依赖让我自己来安装，你只负责编写代码
