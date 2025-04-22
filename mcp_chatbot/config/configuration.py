@@ -3,6 +3,11 @@ import os
 from dotenv import load_dotenv
 from typing import Any, Optional
 
+load_dotenv(
+    dotenv_path=".env", 
+    override=True
+)
+
 class Configuration:
     """配置管理类，用于处理环境变量和配置文件"""
     

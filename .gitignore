@@ -11,8 +11,11 @@ wheels/
 
 # .env files
 .env
+.env.ollama
+.env.vllm
 
 assert/*
 mcp_chatbot_app.py
 bak/*
 simple_mcp_client_stream.py
+

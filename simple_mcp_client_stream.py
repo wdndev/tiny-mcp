@@ -9,9 +9,12 @@ from typing import Optional, List, Dict, Any
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from openai import AsyncOpenAI
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 
-load_dotenv()
+load_dotenv(
+    dotenv_path=".env", 
+    override=True
+)
 
 class MCPClient:
     def __init__(
