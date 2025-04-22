@@ -15,4 +15,4 @@ wheels/
 assert/*
 mcp_chatbot_app.py
 bak/*
-sample_mcp_client_stream.py
+simple_mcp_client_stream.py

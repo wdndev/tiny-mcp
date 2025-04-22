@@ -261,8 +261,7 @@ async def main():
     client = MCPClient(
         model_type=os.getenv("LLM_MODEL_TYPE", ""),
         api_key=os.getenv("LLM_API_KEY", ""),
-        # base_url=os.getenv("LLM_API_URL", ""),
-        base_url="http://100.126.93.122:4321/v1",
+        base_url=os.getenv("LLM_API_URL", ""),
         model_name=os.getenv("LLM_MODEL_NAME", ""),
     )
 
@@ -278,43 +277,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-# [SYS]: LLM_MODEL_TYPE:  deepseek
-# [SYS]:    LLM_API_URL:  https://api.deepseek.com
-# [SYS]: LLM_MODEL_NAME:  deepseek-chat
-# [SYS]: 成功连接服务器，可用工具: ['get_weather']
-# [SYS]: MCP客户端已启动！
-# [SYS]: 输入自然语言查询开始交互（输入 'quit' 退出）
-# [USR]: 珠海的天气怎么样？可以出去看海吗？
-
-# [LOG] Call LLM Messages: [{'role': 'user', 'content': '珠海的天气怎么样？可以出去看海吗？'}]
-# [LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'get_weather', 'description': '查询天气情况', 'parameters': {'properties': {'location': {'title': 'Location', 'type': 'string'}}, 'required': ['location'], 'title': 'get_weatherArguments', 'type': 'object'}}}]
-# [LLM]: 
-
-# [LOG]: 调用工具 [get_weather] 参数: {'location': '珠海'}
-# [LOG]: 工具响应: [TextContent(type='text', text='中国广东省珠海市天气查询成功：\n天气情况：多云\n温度：28°C\n体感温度：29°C\n风向：东南风\n风力等级: 3级\n风速：14公里/小时\n相对湿度：74%\n气压: 1008百帕\n过去一小时降水量:0.0毫米\n能见度: 30 公里\n', annotations=None)]
-
-# [LOG] Call LLM Messages: [{'role': 'user', 'content': '珠海的天气怎么样？可以出去看海吗？'}, {'role': 'assistant', 'content': None, 'tool_calls': [{'type': 'function', 'id': 'call_0_bd1e03db-3656-48d7-8289-10387f9cc680', 'function': {'name': 'get_weather', 'arguments': '{"location":"珠海"}'}}]}, {'role': 'tool', 'content': "[TextContent(type='text', text='中国广东省珠海市天气查询成功：\\n天气情况：多云\\n温度：28°C\\n体感温度：29°C\\n风向：东南风\\n风力等级: 3级\\n风速：14公里/小时\\n相对湿度：74%\\n气压: 1008百帕\\n过去一小时降水量:0.0毫米\\n能 见度: 30 公里\\n', annotations=None)]", 'tool_call_id': 'call_0_bd1e03db-3656-48d7-8289-10387f9cc680', 'name': 'get_weather'}]
-# [LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'get_weather', 'description': '查询天气情况', 'parameters': {'properties': {'location': {'title': 'Location', 'type': 'string'}}, 'required': ['location'], 'title': 'get_weatherArguments', 'type': 'object'}}}]
-# [LLM]: 珠海目前的天气是多云，温度28°C，体感温度29°C，东南风3级，风速14公里/小时，相对湿度74%，能见度30公里。天气状况良好，适合外出看海。不过建议带上防晒用品，以防紫外线较强。
-
-
-[
-    {
-        'role': 'user', 
-        'content': '珠海的天气怎么样？可以出去看海吗？'
-    },
-    {
-        'role': 'tool', 
-        'content': [
-            {
-                "type": "text", 
-                "text": '中国广东省珠海市天气查询成功：\\n天气情况：多云\\n温度：28°C\\n体感温度：29°C', 
-                "annotations": None
-            }
-        ], 
-        'tool_call_id': 'call_0_bd1e03db-3656-48d7-8289-10387f9cc680', 
-        'name': 'get_weather'
-    }
-]

@@ -72,7 +72,6 @@ LLM_API_URL = "https://api.deepseek.com"
 LLM_API_KEY = "sk-xxxxxxxxxxxxxxxxxx"
 LLM_MODEL_NAME = "deepseek-chat"
 
-
 ```
 
 ## 4.使用方法
@@ -215,11 +214,35 @@ python simple_mcp_client.py <服务器标识符> <配置文件路径>
    - LLM 提供最终回复
 4. 交互式循环：用户可以不断输入查询，直到输入"quit"退出
 
-## 7.参考文档
+
+## 7.FAQ
+
+### 7.1 API Key
+
+
+在本项目中，所有对 LLM 的调用均采用 OpenAI 格式的请求，支持市面上兼容 OpenAI 格式的 API Key。
+
+推荐使用 DeepSeek 的 [API](https://platform.deepseek.com/api_keys)，其价格合理且效果良好。
+
+如果您只想运行此项目并学习 MCP 相关知识，而不愿购买 API Key，可以选择本地部署。对于 Linux 系统，建议使用 VLLM 部署大型模型；对于 Windows 系统，建议使用 Ollama 部署模型。
+
+以下是一个适用于 Windows 系统的 Ollama 部署 qwen2.5:1.5b 模型的 .env 文件示例配置，供参考：
+
+```Bash
+LLM_MODEL_TYPE = "ollama"
+LLM_API_URL = "http://localhost:11434/v1"
+LLM_API_KEY = "ollama"
+LLM_MODEL_NAME = "qwen2.5:1.5b"
+```
+
+注意：若无GPU资源，可以在 Windows 系统上部署 Ollama + qwen2.5:1.5b 模型，该模型大约占用 2GB 内存，建议至少有 4GB 的内存余量以确保正常运行。测试发现，qwen2.5:0.5b 模型在调用 function call 时存在问题，而 qwen2.5:1.5b 模型调用 function call 则正常。
+
+
+## 8.参考文档
 
 - [MCP Docs](https://modelcontextprotocol.io)
 - [MCP Docs cn](https://mcp-docs.cn)
 - [UV Docs](https://hellowac.github.io/uv-zh-cn)
 - [飞书 MCP中文社区](https://larkcommunity.feishu.cn/wiki/FvgIwbijgiXmh8k0Jk2c7nOznXQ)
-- [MCP服务器列表](https://github.com/punkpeye/awesome-mcp-server)
+- [MCP服务器列表](https://github.com/punkpeye/awesome-mcp-servers)
 
