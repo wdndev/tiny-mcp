@@ -3,15 +3,15 @@ import json
 
 from loguru import logger
 
-from .mcp_server import MCPServer
-from .llm_service import LLMService
+from ..mcp.mcp_client import MCPClient
+from ..llm.llm_service import LLMService
 
 class ChatSession:
     """ 聊天会话类，协调用户、LLM和工具之间的交互
     """
     def __init__(
         self,
-        servers: list[MCPServer],
+        servers: list[MCPClient],
         llm_service: LLMService,
     ):
         self.servers = servers

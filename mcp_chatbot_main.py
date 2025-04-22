@@ -2,16 +2,17 @@ import asyncio
 import json
 from loguru import logger
 
-from mcp_chatbot import Configuration, ChatSession, LLMService, MCPServer
+from mcp_chatbot import Configuration, ChatSession, LLMService, MCPClient
 
 async def main() -> None:
     """主入口函数
     """
     config = Configuration()
+    config.print_config()
     server_config = config.load_config("config/server_config.json")  # 加载服务器配置
 
     servers = [
-        MCPServer(name, config)
+        MCPClient(name, config)
         for name, config in server_config["mcpServers"].items()  # 创建服务器实例
     ]
 

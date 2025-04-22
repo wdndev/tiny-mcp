@@ -13,7 +13,7 @@ from mcp.client.stdio import stdio_client
 
 from .mcp_tool import MCPTool
 
-class MCPServer:
+class MCPClient:
     """ MCP服务器管理类，处理连接和工具执行
 
     {
