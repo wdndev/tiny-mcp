@@ -63,3 +63,4 @@ class Configuration:
         print("[CFG]: LLM_MODEL_TYPE: ", self.model_type)
         print("[CFG]:    LLM_API_URL: ", self.base_url)
         print("[CFG]: LLM_MODEL_NAME: ", self.model_name)
+        print()

@@ -5,7 +5,6 @@ import os
 import shutil
 from contextlib import AsyncExitStack
 from typing import Any
-from loguru import logger
 
 
 from mcp import ClientSession, StdioServerParameters
@@ -58,7 +57,7 @@ class MCPClient:
         # print("command: ", command)
         # print("args: ", self.config["args"])
         if command is None:
-            raise ValueError("命令必须是有效字符串且不能为None")
+            raise ValueError("[ERR]: 命令必须是有效字符串且不能为None")
         
 
         # 构建服务器参数
@@ -82,7 +81,7 @@ class MCPClient:
             await session.initialize()
             self.session = session
         except Exception as e:
-            logger.error(f"初始化服务器 {self.name} 失败: {e}")
+            print(f"[ERR]: 初始化服务器 {self.name} 失败: {e}")
             await self.cleanup()
             raise
 
@@ -90,7 +89,7 @@ class MCPClient:
         """获取服务器可用工具列表
         """
         if not self.session:
-            raise RuntimeError(f"服务器 {self.name} 未初始化")
+            raise RuntimeError(f"[ERR]: 服务器 {self.name} 未初始化")
 
         tools_response = await self.session.list_tools()
         return [
@@ -117,20 +116,24 @@ class MCPClient:
             delay: 重试间隔（秒）
         """
         if not self.session:
-            raise RuntimeError(f"服务器 {self.name} 未初始化")
+            raise RuntimeError(f"[ERR]: 服务器 {self.name} 未初始化")
         
         attempt = 0
         while attempt < retries:
             try:
-                logger.info(f"正在执行 {tool_name}...")
-                return await self.session.call_tool(tool_name, arguments)
+                print(f"[LOG]: 调用工具 [{tool_name}] 参数: {arguments}")
+                tool_result = await self.session.call_tool(tool_name, arguments)
+                print(f"[LOG]: 调用结果: {tool_result.model_dump()}")
+                print(f"[LOG]: 工具响应: {tool_result.content}\n")
+                
+                return tool_result
             except Exception as e:
                 attempt += 1
-                logger.warning(f"工具执行失败: {e}. 第 {attempt} 次重试（最多 {retries} 次）")
+                print(f"[ERR]: 工具执行失败: {e}. 第 {attempt} 次重试（最多 {retries} 次）")
                 if attempt < retries:
                     await asyncio.sleep(delay)
                 else:
-                    logger.error("达到最大重试次数，操作终止")
+                    print("[ERR]: 达到最大重试次数，操作终止")
                     raise
 
     async def cleanup(self) -> None:
@@ -142,4 +145,4 @@ class MCPClient:
                 self.session = None
                 self.stdio_context = None
             except Exception as e:
-                logger.error(f"清理服务器 {self.name} 时出错: {e}")
+                print(f"[LOG]: 清理服务器 {self.name} 时出错: {e}")

@@ -1,8 +1,6 @@
 import asyncio
 import json
 
-from loguru import logger
-
 from ..mcp.mcp_client import MCPClient
 from ..llm.llm_service import LLMService
 
@@ -11,17 +9,17 @@ class ChatSession:
     """
     def __init__(
         self,
-        servers: list[MCPClient],
+        clients: list[MCPClient],
         llm_service: LLMService,
     ):
-        self.servers = servers
+        self.clients = clients
         self.llm_service = llm_service 
 
-    async def cleanup_servers(self) -> None:
+    async def cleanup_clients(self) -> None:
         """ 清理所有服务器
         """
         await asyncio.gather(
-            *[asyncio.create_task(server.cleanup()) for server in self.servers],
+            *[asyncio.create_task(client.cleanup()) for client in self.clients],
             return_exceptions=True
         )
 
@@ -32,24 +30,22 @@ class ChatSession:
             llm_response = llm_response.replace("```json", "").replace("```", "")
             tool_call = json.loads(llm_response)
             if "tool" in tool_call and "arguments" in tool_call:
-                logger.info(f"执行工具: {tool_call['tool']}")
-                logger.info(f"工具参数: {tool_call['arguments']}")
                 # 查找对应服务器
-                for server in self.servers:
+                for server in self.clients:
                     if any(tool.name == tool_call["tool"] for tool in await server.list_tools()):
                         result = await server.execute_tool(tool_call["tool"], tool_call["arguments"])
 
                         # 处理进度信息
                         if isinstance(result, dict) and "progress" in result:
                             progress = (result["progress"] / result["total"]) * 100
-                            logger.info(f"进度: {progress:.1f}%")
+                            print(f"[LOG]: 进度: {progress:.1f}%")
                         
                         return f"工具执行结果: {result}"
                         
                 return f"未找到工具: {tool_call['tool']}"
             return llm_response
         except json.JSONDecodeError:
-            logger.warning("LLM 响应不是有效的 JSON 格式")
+            print("[ERR]: LLM 响应不是有效的 JSON 格式")
             return llm_response
         
     async def start(self) -> None:
@@ -57,19 +53,23 @@ class ChatSession:
         """
         try:
             # 初始化所有服务器
-            for server in self.servers:
+            for server in self.clients:
                 try:
                     await server.initializer()
                 except Exception as e:
-                    logger.error(f"初始化 server 失败: {e}")
+                    print(f"[ERR]: 初始化 server 失败: {e}")
                     await self.cleanup_servers()
                     return
 
             # 收集所有工具信息
             all_tools = []
-            for server in self.servers:
+            all_tools_name = []
+            for server in self.clients:
                 tools = await server.list_tools()
                 all_tools.extend(tools)
+                all_tools_name.extend([tool.name for tool in tools])
+
+            print(f"[SYS]: 可用工具: {all_tools_name}")
 
             tools_descriptions = "\n".join([tool.format_for_llm() for tool in all_tools])
 
@@ -99,21 +99,20 @@ class ChatSession:
             ]
 
             while True:
-                user_input = input("[User]: ").strip().lower()
+                user_input = input("\n[USR]: ").strip().lower()
+                print()
                 if user_input in ["quit", "exit"]:
-                    logger.info("\n退出聊天")
+                    print("[SYS]: \n退出聊天")
                     break
 
                 messages.append({"role": "user", "content": user_input})
 
                 # 获取LLM输出
                 llm_response = self.llm_service.get_response(messages)
-                logger.info(f"\nAssistant: {llm_response}")
+                print(f"[LOG]: {llm_response}")
 
                 # 工具调用
                 processed_result = await self.process_llm_response(llm_response)
-
-                print("processed_result: ", processed_result)
 
                 # 处理
                 if processed_result != llm_response:
@@ -121,7 +120,7 @@ class ChatSession:
                     messages.append({"role": "system", "content": processed_result})
                     
                     final_response = self.llm_service.get_response(messages)
-                    logger.info(f"\n最终响应: {final_response}")
+                    print(f"[LLM]: {final_response}")
                 else:
                     messages.append({"role": "assistant", "content": llm_response})
         
