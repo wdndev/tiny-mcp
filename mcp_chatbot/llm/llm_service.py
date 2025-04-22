@@ -3,7 +3,8 @@ from typing import Generator, Optional, Union
 import warnings
 
 class LLMService:
-    """同步方式LLM服务类"""
+    """LLM服务类
+    """
     
     def __init__(
         self, 
