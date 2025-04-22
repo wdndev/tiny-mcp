@@ -16,17 +16,18 @@ MCP Client 是一个基于 Model Context Protocol 的 Python 客户端实现（�
 ### 2.2 目录结构
 
 ```bash
-├───.venv                 # uv 虚拟环境, （uv建立）
-├───config                # MCP Server 配置文件
-├───docs                  # 文档
-├───mcp_client            # MCP 客户端
-├───services              # MCP 服务器
-├───.env.example          # 示例环境变量文件
-├───mcp_client_main.py    # MCP 客户端主程序，依赖于 mcp_client 代码， 支持多MCP服务器， prompt 模式开发
-├───simple_mcp_client.py  # simple MCP Client，只能支持单个 MCP 服务器， Function Calling 模式开发
-├───.python-version       # uv Python版本
-├───pyproject.toml        # uv 环境依赖
-└───uv.lock               # uv 锁文件
+├───.venv                       # uv 虚拟环境, （uv建立）
+├───config                      # MCP Server 配置文件
+├───docs                        # 文档
+├───mcp_client                  # MCP 客户端
+├───services                    # MCP 服务器
+├───.env.example                # 示例环境变量文件
+├───mcp_client_main.py          # MCP 客户端主程序，依赖于 mcp_client 代码， 支持多MCP服务器， prompt 模式开发
+├───simple_mcp_client.py        # simple MCP Client，只能支持单个 MCP 服务器， Function Calling 模式开发
+├───simple_mcp_client_stream.py # simple MCP Client（流式），只能支持单个 MCP 服务器， 
+├───.python-version             # uv Python版本
+├───pyproject.toml              # uv 环境依赖
+└───uv.lock                     # uv 锁文件
 ```
 
 ## 3.安装和配置
@@ -236,6 +237,32 @@ LLM_MODEL_NAME = "qwen2.5:1.5b"
 ```
 
 注意：若无GPU资源，可以在 Windows 系统上部署 Ollama + qwen2.5:1.5b 模型，该模型大约占用 2GB 内存，建议至少有 4GB 的内存余量以确保正常运行。测试发现，qwen2.5:0.5b 模型在调用 function call 时存在问题，而 qwen2.5:1.5b 模型调用 function call 则正常。
+
+Ollama + qwen2.5:1.5b 测试示例：
+
+```bash
+(tiny-mcp) PStiny-mcp> python simple_mcp_client_stream.py services/weather_service_zh.py
+[SYS]: LLM_MODEL_TYPE:  ollama
+[SYS]:    LLM_API_URL:  http://localhost:11434/v1
+[SYS]: LLM_MODEL_NAME:  qwen2.5:1.5b
+[SYS]: 成功连接服务器，可用工具: ['get_weather']
+[SYS]: MCP客户端已启动！
+[SYS]: 输入自然语言查询开始交互（输入 'quit' 退出）
+[USR]: 北京市的天气怎么样？能出去玩吗？
+
+[LOG] Call LLM Messages: [{'role': 'user', 'content': '北京市的天气怎么样？能出去玩吗？'}]
+[LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'get_weather', 'description': '查询天气情况', 'parameters': {'properties': {'location': {'title': 'Location', 'type': 'string'}}, 'required': ['location'], 'title': 'get_weatherArguments', 'type': 'object'}}}]
+[LLM]: 
+
+[LOG]: 完整工具调用参数: [{"name": "get_weather", "arguments": {"location": "北京"}}]
+[LOG]: 调用结果: {'meta': None, 'content': [{'type': 'text', 'text': '中国北京省北京市天气查询成功：\n天气情况：晴\n温度：20°C\n体感温度：18°C\n风向：南风\n风力等级: 2级\n风速：6公里/小时\n相对湿度：18%\n气压: 1012百帕\n 过去一小时降水量:0.0毫米\n能见度: 30 公里\n', 'annotations': None}], 'isError': False}
+[LOG]: 调用工具 [get_weather] 参数: {'location': '北京'}
+[LOG]: 工具响应: [TextContent(type='text', text='中国北京省北京市天气查询成功：\n天气情况：晴\n温度：20°C\n体感温度：18°C\n风向：南风\n风力等级: 2级\n风速：6公里/小时\n相对湿度：18%\n气压: 1012百帕\n过去一小时降水量:0.0毫米\n能见度: 30 公里\n', annotations=None)]
+
+[LOG] Call LLM Messages: [{'role': 'user', 'content': '北京市的天气怎么样？能出去玩吗？'}, {'role': 'assistant', 'content': None, 'tool_calls': [{'type': 'function', 'id': 'call_4bkqo3xu', 'function': {'name': 'get_weather', 'arguments': '{"location":"北京"}'}}]}, {'role': 'tool', 'content': [{'type': 'text', 'text': '中国北京省北京市天气查询成功：\n天气情况：晴\n温度：20°C\n体感温度：18°C\n风向：南风\n风力等级: 2级\n风速：6公里/小时\n相 对湿度：18%\n气压: 1012百帕\n过去一小时降水量:0.0毫米\n能见度: 30 公里\n', 'annotations': None}], 'tool_call_id': 'call_4bkqo3xu', 'name': 'get_weather'}]
+[LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'get_weather', 'description': '查询天气情况', 'parameters': {'properties': {'location': {'title': 'Location', 'type': 'string'}}, 'required': ['location'], 'title': 'get_weatherArguments', 'type': 'object'}}}]
+[LLM]: 目前中国北京的天气情况是晴朗，温度大约为20°C。体感温度较为舒适，风向来自南方，属微风级别，风速约为6公里/小时。请注意保暖和随身携带雨具，以防突发降雨。建议带上墨镜、太阳伞等防晒防尘用品，保持良好的体态，并确保车内或外行的安全，随时观察天气变化。当前的空气质量良好，紫外线强，请适量做好防护措施，以保证您的健康安全。
+```
 
 
 ## 8.参考文档
