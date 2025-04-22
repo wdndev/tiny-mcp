@@ -1,5 +1,6 @@
 import asyncio
 import json
+import sys
 
 from ..mcp.mcp_client import MCPClient
 from ..llm.llm_service import LLMService
@@ -108,8 +109,17 @@ class ChatSession:
                 messages.append({"role": "user", "content": user_input})
 
                 # 获取LLM输出
-                llm_response = self.llm_service.get_response(messages)
-                print(f"[LOG]: {llm_response}")
+                llm_stream = self.llm_service.get_response(messages, stream=True)
+                # print(f"[LOG]: {llm_response}")
+                sys.stdout.write("[LOG]: ")
+                sys.stdout.flush()
+                llm_response = ""
+                for content_chunk in llm_stream:
+                    if content_chunk:
+                        sys.stdout.write(content_chunk)
+                        sys.stdout.flush()
+                        llm_response += content_chunk
+                print("\n")  # 流式输出结束后换行
 
                 # 工具调用
                 processed_result = await self.process_llm_response(llm_response)
@@ -119,8 +129,18 @@ class ChatSession:
                     messages.append({"role": "assistant", "content": llm_response})
                     messages.append({"role": "system", "content": processed_result})
                     
-                    final_response = self.llm_service.get_response(messages)
-                    print(f"[LLM]: {final_response}")
+                    llm_stream = self.llm_service.get_response(messages, stream=True)
+                    # print(f"[LLM]: {final_response}")
+                    sys.stdout.write("[LLM]: ")
+                    sys.stdout.flush()
+                    final_response = ""
+                    for content_chunk in llm_stream:
+                        if content_chunk:
+                            sys.stdout.write(content_chunk)
+                            sys.stdout.flush()
+                            final_response += content_chunk
+                    print("\n")  # 流式输出结束后换行
+
                 else:
                     messages.append({"role": "assistant", "content": llm_response})
         
