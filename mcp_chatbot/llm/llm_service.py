@@ -80,7 +80,7 @@ class LLMService:
                 yield delta.content
 
 if __name__ == "__main__":
-    llm = LLMService(api_key="sk-f294ffdaf91f41108e550562911e013c")
+    llm = LLMService(api_key="sk-xxxxxxxxxx")
     messages=[
         {"role": "system", "content": "You are a helpful assistant"},
         {"role": "user", "content": "你好"},
