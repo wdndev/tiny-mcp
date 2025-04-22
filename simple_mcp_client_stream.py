@@ -255,14 +255,19 @@ async def main():
         print("方式 2: python mcp_client.py <服务器标识符> <配置文件路径>")
         sys.exit(1)
 
-    print("[SYS]: LLM_MODEL_TYPE: ", os.getenv("LLM_MODEL_TYPE", ""))
-    print("[SYS]:    LLM_API_URL: ", os.getenv("LLM_API_URL", ""))
-    print("[SYS]: LLM_MODEL_NAME: ", os.getenv("LLM_MODEL_NAME", ""))
+    model_type = os.getenv("LLM_MODEL_TYPE", "")
+    api_key = os.getenv("LLM_API_KEY", "")
+    base_url = os.getenv("LLM_API_URL", "")
+    model_name = os.getenv("LLM_MODEL_NAME", "")
+
+    print("[SYS]: LLM_MODEL_TYPE: ", model_type)
+    print("[SYS]:    LLM_API_URL: ", base_url)
+    print("[SYS]: LLM_MODEL_NAME: ", model_name)
     client = MCPClient(
-        model_type=os.getenv("LLM_MODEL_TYPE", ""),
-        api_key=os.getenv("LLM_API_KEY", ""),
-        base_url=os.getenv("LLM_API_URL", ""),
-        model_name=os.getenv("LLM_MODEL_NAME", ""),
+        model_type=model_type,
+        api_key=api_key,
+        base_url=base_url,
+        model_name=model_name,
     )
 
     try:

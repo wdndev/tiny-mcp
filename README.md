@@ -24,7 +24,7 @@ MCP Client 是一个基于 Model Context Protocol 的 Python 客户端实现（�
 ├───.env.example                # 示例环境变量文件
 ├───mcp_client_main.py          # MCP 客户端主程序，依赖于 mcp_client 代码， 支持多MCP服务器， prompt 模式开发
 ├───simple_mcp_client.py        # simple MCP Client，只能支持单个 MCP 服务器， Function Calling 模式开发
-├───simple_mcp_client_stream.py # simple MCP Client（流式），只能支持单个 MCP 服务器， 
+├───simple_mcp_client_stream.py # simple MCP Client（流式），只能支持单个 MCP 服务器， Function Calling 模式开发
 ├───.python-version             # uv Python版本
 ├───pyproject.toml              # uv 环境依赖
 └───uv.lock                     # uv 锁文件
