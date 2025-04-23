@@ -6,7 +6,7 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("TimeServer")
 
 @mcp.tool()
-def get_current_time(timezone: Optional[str] = None) -> str:
+async def get_current_time(timezone: Optional[str] = None) -> str:
     """
     获取指定时区或本地的当前时间
     

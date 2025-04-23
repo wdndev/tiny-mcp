@@ -45,7 +45,7 @@ class MCPClient:
         self._cleanup_lock: asyncio.Lock = asyncio.Lock()  # 异步清理锁
         self.exit_stack: AsyncExitStack = AsyncExitStack()  # 异步上下文管理器栈
 
-    async def initializer(self) -> None:
+    async def initialize(self) -> None:
         """ 初始化服务器
         """
         # 解析执行命令（支持npx或自定义命令）
@@ -146,3 +146,14 @@ class MCPClient:
                 self.stdio_context = None
             except Exception as e:
                 print(f"[LOG]: 清理服务器 {self.name} 时出错: {e}")
+
+    async def __aenter__(self):
+        """Enter the async context manager.
+        """
+        await self.initialize()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Exit the async context manager.
+        """
+        await self.cleanup()

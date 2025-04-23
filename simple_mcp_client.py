@@ -259,4 +259,9 @@ async def main():
         await client.cleanup()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import platform
+    if platform.system().lower() == 'windows':
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
+    else:
+        asyncio.run(main())
