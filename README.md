@@ -2,14 +2,14 @@
 
 MCP Client 是一个基于 Model Context Protocol 的 Python 客户端实现（使用 Function Calling 和 prompt 两种方式），它允许您的应用连接到各种 MCP 服务器，并通过大语言模型（LLM）与这些服务器交互。MCP（模型上下文协议）是一个开放协议，用于标准化应用程序向 LLM 提供上下文的方式。
 
-- `simple_mcp_client.py` : 基于 prompt 模式实现 MCP Client, 支持多MCP服务器运行，但只能支持配置文件运行；
-- `mcp_client_main.py` : 基于 Function Calling 模式实现 MCP Client, 只能支持单个 MCP 服务器，支持配置文件和直接调用服务器运行；
+- `mcp_client_main.py` : 基于 prompt 模式实现 MCP Client, 支持多MCP服务器运行，但只能支持配置文件运行；
+- `simple_mcp_client.py` : 基于 Function Calling 模式实现 MCP Client, 只能支持单个 MCP 服务器，支持配置文件和直接调用服务器运行；
 
 ## 2.系统 & 目录
 
 ### 2.1 系统要求
 
-- 建议Python版本为 `3.12` 以上
+- 建议Python版本为 `3.11` 以上
 - LLM API 密钥 (建议 deepseek )
 - 和风天气密钥 (运行天气服务器)
 
@@ -56,7 +56,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 - 安装依赖
 
 ```Bash
-uv venv --python 3.12
+uv venv --python 3.11
 uv sync
 ```
 - 配置环境变量
