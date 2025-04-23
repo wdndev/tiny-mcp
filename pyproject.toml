@@ -5,13 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "httpx>=0.28.1",
-    "loguru>=0.7.3",
     "mcp[cli]>=1.6.0",
     "openai>=1.74.0",
     "python-dotenv>=1.1.0",
     "requests>=2.32.3",
-    "streamlit>=1.44.1",
     "tzdata>=2025.2",
     "ujson>=5.10.0",
 ]

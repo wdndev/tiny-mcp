@@ -18,5 +18,5 @@ assert/*
 mcp_chatbot_app.py
 bak/*
 simple_mcp_client_stream.py
-mcp_chatbot_termial*
-
+mcp_chatbot_termial.py
+mcp_chatbot_stream.py

@@ -1,6 +1,5 @@
 import asyncio
 import json
-from loguru import logger
 
 from mcp_chatbot import Configuration, ChatSession, LLMService, MCPClient
 
