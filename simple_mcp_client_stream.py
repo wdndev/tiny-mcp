@@ -32,8 +32,13 @@ class MCPClient:
         self.session: Optional[ClientSession] = None
         self.stdio_transport = None
         self.exit_stack = AsyncExitStack()
-        self.available_tools: List[Dict[str, Any]] = []
         self._cleanup_lock: asyncio.Lock = asyncio.Lock()
+
+        self.available_tools: List[Dict[str, Any]] = []
+        # {resources_name: resources}
+        self.resources_dict = {}
+        # {promts_name, description}
+        self.prompts_dict = {}
 
         self.llm_client = AsyncOpenAI(
             api_key=api_key,
@@ -89,7 +94,10 @@ class MCPClient:
         )
         await self.session.initialize()
 
-        response = await self.session.list_tools()
+        print(f"[SYS]: 服务器链接成功 !!!\n")
+
+        # 获取可用工具列表
+        tools_response = await self.session.list_tools()
         self.available_tools = [
             {
                 "type": "function",
@@ -99,15 +107,117 @@ class MCPClient:
                     "parameters": tool.inputSchema
                 }
             }
-            for tool in response.tools
+            for tool in tools_response.tools
         ]
-        print(f"[SYS]: 成功连接服务器，可用工具: {[t['function']['name'] for t in self.available_tools]}")
+        print(f"[SYS]: 可用工具: {[t['function']['name'] for t in self.available_tools]}")
+
+        # 获取资源列表
+        resources_response = await self.session.list_resources()
+        resources_names = [resource.name for resource in resources_response.resources]
+        for resource_name in resources_names:
+            resource = await self.session.read_resource(resource_name)
+            self.resources_dict[resource_name] = resource.contents[0].text
+
+        print(f"[SYS]: 可用资源: {resources_names}")
+
+        prompts_response = await self.session.list_prompts()
+        prompts_names = []
+        for prompt in prompts_response.prompts:
+            prompt_name = prompt.name
+            prompts_names.append(prompt_name)
+            self.prompts_dict[prompt_name] = prompt.description
+        # print(f"[SYS]: 可用 Prompt: {prompts_names}")
+        print(f"[SYS]: 可用 Prompt: {self.prompts_dict}")
+
+    async def selcect_prompt_template(self, user_question: str) -> str:
+        """ 根据用户问题选择 prompt 模板
+        """
+        # 需要详细回答的指示词
+        detailed_indicators = [
+            "解释", "说明", "详细", "具体", "详尽", "深入", "全面", "彻底", 
+            "分析", "为什么", "怎么样", "如何", "原因", "机制", "过程",
+            "explain", "detail", "elaborate", "comprehensive", "thorough",
+            "in-depth", "analysis", "why", "how does", "reasons",
+            "背景", "历史", "发展", "比较", "区别", "联系", "影响", "意义",
+            "优缺点", "利弊", "方法", "步骤", "案例", "举例", "证明",
+            "理论", "原理", "依据", "论证", "详解", "指南", "教程",
+            "细节", "要点", "关键", "系统", "完整", "清晰", "请详细"
+        ]
+
+        # 判断问题类型
+        question_lower = user_question.lower()
+        is_brief_question = len(question_lower.split()) < 10
+        wants_details = any(
+            indicator in question_lower for indicator in detailed_indicators
+        )
+
+        # 返回模板类型， 和service对应
+        return (
+            "detailed_response"
+            if (wants_details or not is_brief_question)
+            else "simply_replay"
+        )
+    
+    async def add_relevant_resources(self, user_question: str) -> str:
+        """ 根据用户问题添加资源
+        """
+        keywords_map = {
+            "MCP规范协议": ["mcp-doc://4.MCP规范协议.md"],
+            "MCP交互流程": ["mcp-doc://6.MCP核心交互流程.md"],
+            "MCP": ["mcp-doc://4.MCP规范协议.md", "mcp-doc://6.MCP核心交互流程.md"],
+        }
+
+        # 关键字匹配查找
+        matched_resources = []
+        for keyword, resources in keywords_map.items():
+            if keyword in user_question:
+                for resource in resources:
+                    if (
+                        resource in self.resources_dict
+                        and resource not in matched_resources
+                    ):
+                        matched_resources.append(resource)
+        
+        # 没有匹配则返回原问题
+        if not matched_resources:
+            return user_question
+        
+        # 构建增强的问题
+        context_parts = []
+        for resource in matched_resources:
+            context_parts.append(f"--- {resource} ---\n{self.resources_dict[resource]}")
+
+        return (
+            user_question + "\n\n相关信息:\n\n" + "\n\n".join(context_parts)
+        )
 
     async def process_query(self, query: str, messages: List[dict] = None, depth: int = 0) -> str:
         if depth >= 5:
             return "[ERR] 超过最大递归深度，请检查工具调用逻辑"
+        
+        # messages = []
+        # messages = messages.copy() if messages else [{"role": "user", "content": query}]
+        
+        if messages:
+            messages = messages.copy()
+        else:
+            user_text = query.strip()
+            # 1.选择 prompt
+            if self.prompts_dict:
+                template_name = await self.selcect_prompt_template(user_text)
+                prompt_response = await self.session.get_prompt(
+                    template_name, 
+                    arguments={"question": user_text}
+                )
+                user_text = prompt_response.messages[0].content.text
+                print(f"[LOG]: 选择的提示模板: {template_name} \n")
 
-        messages = messages.copy() if messages else [{"role": "user", "content": query}]
+            # 2.添加相关资源
+            if self.resources_dict:
+                user_text = await self.add_relevant_resources(user_text)
+            
+            messages = [{"role": "user", "content": user_text}]
+        
         full_response = ""
         tool_calls_cache = {}
 

@@ -201,6 +201,57 @@ python simple_mcp_client.py <服务器标识符> <配置文件路径>
 如果您计划参观天安门，建议携带雨具，并注意地面湿滑。如果雨势较大，可能会影响游览体验，建议根据天气情况灵活调整行程。
 ```
 
+测试 `tools`, `prompts`和`resources` 模块在MCP中客户端和服务端的应用示例：
+
+- 服务端：`services\res_prompt_services.py`
+- 客户端：`simple_mcp_client.py`
+  - Resources 和 Prompts MCP Service 示例
+  - Resources: MCP 的 markdown 文档
+  - Prompts: prompt template
+
+```Bash
+(tiny-mcp) tiny-mcp> python simple_mcp_client_stream.py services/res_prompt_services.py
+[SYS]: LLM_MODEL_TYPE:  deepseek
+[SYS]:    LLM_API_URL:  https://api.deepseek.com
+[SYS]: LLM_MODEL_NAME:  deepseek-chat
+[SYS]: 服务器链接成功 !!!
+
+[SYS]: 可用工具: ['save_to_local']
+[SYS]: 可用资源: ['mcp-doc://4.MCP%E8%A7%84%E8%8C%83%E5%8D%8F%E8%AE%AE.md', 'mcp-doc://6.MCP%E6%A0%B8%E5%BF%83%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B.md']
+[SYS]: 可用 Prompt: {'simply_replay': '简洁回答的提示模板', 'detailed_response': '详细回答的提示模板'}
+[SYS]: MCP客户端已启动！
+[SYS]: 输入自然语言查询开始交互（输入 'quit' 退出）
+[USR]: 请介绍MCP的交互流程，并保存到本地，文件名为 mcp_interatcion_file.txt
+
+[LOG]: 选择的提示模板: simply_replay
+
+[LOG] Call LLM Messages: [{'role': 'user', 'content': '请简洁地回答以下问题:\n\n请介绍MCP的交互流程，并保存到本地，文件名为 mcp_interatcion_file.txt'}]
+[LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'save_to_local', 'description': '保存问题和回答到本地文件', 'parameters': {'properties': {'file_name': {'title': 'File Name', 'type': 'string'}, 'question': {'title': 'Question', 'type': 'string'}, 'answer': {'title': 'Answer', 'type': 'string'}}, 'required': ['file_name', 'question', 'answer'], 'title': 'save_to_localArguments', 'type': 'object'}}}]
+[LLM]: 为了提供一个具体的答案，我需要假设一些关于MCP（可能是某种产品或系统）的信息，因为您没有提供具体的背景信息。通常，一个系统的交互流程会包括用户如何与该系统进行互动的步骤。
+
+假设MCP是一个软件应用，其交互流程可能如下：
+1. 用户登录MCP系统。
+2. 用户浏览可用的功能或服务。
+3. 用户选择一个功能并填写必要的信息。
+4. 系统处理请求并返回结果给用户。
+5. 用户根据需要重复步骤3-4，直到完成所有任务。
+6. 用户退出系统。
+
+现在，我将这个简化的交互流程保存到名为`mcp_interatcion_file.txt`的本地文件中。
+{"tool_calls": [{"function": {"name": "save_to_local", "arguments": {"file_name": "mcp_interatcion_file.txt", "question": "请介绍MCP的交互流程", "answer": "1. 用 户登录MCP系统。\n2. 用户浏览可用的功能或服务。\n3. 用户选择一个功能并填写必要的信息。\n4. 系统处理请求并返回结果给用户。\n5. 用户根据需要重复步骤3-4，直到完成所有任务。\n6. 用
+
+[LOG]: 完整工具调用参数: [{"name": "save_to_local", "arguments": {"file_name": "mcp_interatcion_file.txt", "question": "请介绍MCP的交互流程", "answer": "1. 用户登录MCP系统。\n2. 用户浏览可用的功能或服务。\n3. 用户选择一个功能并填写必要的信息。\n4. 系统处理请求并返回结果给用户。\n5. 用户根据需要重复步骤3-4，直到完成所有任务。\n6. 用户退出系统。"}}]
+[LOG]: 调用结果: {'meta': None, 'content': [{'type': 'text', 'text': '成功保存到: logs\\mcp_interatcion_file.txt', 'annotations': None}], 'isError': False}
+[LOG]: 调用工具 [save_to_local] 参数: {'file_name': 'mcp_interatcion_file.txt', 'question': '请介绍MCP的交互流程', 'answer': '1. 用户登录MCP系统。\n2. 用户浏览可 用的功能或服务。\n3. 用户选择一个功能并填写必要的信息。\n4. 系统处理请求并返回结果给用户。\n5. 用户根据需要重复步骤3-4，直到完成所有任务。\n6. 用户退出系统。'}   
+[LOG]: 工具响应: [TextContent(type='text', text='成功保存到: logs\\mcp_interatcion_file.txt', annotations=None)]
+
+[LOG] Call LLM Messages: [{'role': 'user', 'content': '请简洁地回答以下问题:\n\n请介绍MCP的交互流程，并保存到本地，文件名为 mcp_interatcion_file.txt'}, {'role': 'assistant', 'content': None, 'tool_calls': [{'type': 'function', 'id': 'call_d696fa88eab449cc8d223027d948da14', 'function': {'name': 'save_to_local', 'arguments': '{"file_name": "mcp_interatcion_file.txt", "question": "\\u8bf7\\u4ecb\\u7ecdMCP\\u7684\\u4ea4\\u4e92\\u6d41\\u7a0b", "answer": "1. \\u7528\\u6237\\u767b\\u5f55MCP\\u7cfb\\u7edf\\u3002\\n2. \\u7528\\u6237\\u6d4f\\u89c8\\u53ef\\u7528\\u7684\\u529f\\u80fd\\u6216\\u670d\\u52a1\\u3002\\n3. \\u7528\\u6237\\u9009\\u62e9\\u4e00\\u4e2a\\u529f\\u80fd\\u5e76\\u586b\\u5199\\u5fc5\\u8981\\u7684\\u4fe1\\u606f\\u3002\\n4. \\u7cfb\\u7edf\\u5904\\u7406\\u8bf7\\u6c42\\u5e76\\u8fd4\\u56de\\u7ed3\\u679c\\u7ed9\\u7528\\u6237\\u3002\\n5. \\u7528\\u6237\\u6839\\u636e\\u9700\\u8981\\u91cd\\u590d\\u6b65\\u9aa43-4\\uff0c\\u76f4\\u5230\\u5b8c\\u6210\\u6240\\u6709\\u4efb\\u52a1\\u3002\\n6. \\u7528\\u6237\\u9000\\u51fa\\u7cfb\\u7edf\\u3002"}'}}]}, {'role': 'tool', 'content': [{'type': 'text', 'text': '成功保存到: logs\\mcp_interatcion_file.txt', 'annotations': None}], 'tool_call_id': 'call_d696fa88eab449cc8d223027d948da14', 'name': 'save_to_local'}]
+[LOG] Call LLM Tools: [{'type': 'function', 'function': {'name': 'save_to_local', 'description': '保存问题和回答到本地文件', 'parameters': {'properties': {'file_name': {'title': 'File Name', 'type': 'string'}, 'question': {'title': 'Question', 'type': 'string'}, 'answer': {'title': 'Answer', 'type': 'string'}}, 'required': ['file_name', 'question', 'answer'], 'title': 'save_to_localArguments', 'type': 'object'}}}]
+[LLM]: 我已经简要介绍了MCP的交互流程，并将其保存到了文件`mcp_interatcion_file.txt`中。由于您没有提供具体的MCP交互流程内容，我无法给出详细的介绍。如果您能提供更多 信息，我将很乐意帮助您。
+
+[USR]: quit
+```
+
 ## 6.工作原理
 
 ![alt text](docs/image/image.png)
