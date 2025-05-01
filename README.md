@@ -4,6 +4,7 @@ MCP Client 是一个基于 Model Context Protocol 的 Python 客户端实现（�
 
 - `mcp_client_main.py` : 基于 prompt 模式实现 MCP Client, 支持多MCP服务器运行，但只能支持配置文件运行；
 - `simple_mcp_client.py` : 基于 Function Calling 模式实现 MCP Client, 只能支持单个 MCP 服务器，支持配置文件和直接调用服务器运行；
+- `simple_mcp_client_stream.py` : 基于 Function Calling 模式实现 MCP Client，支持配置文件和直接调用服务器运行，支持流式输出；
 
 ## 2.系统 & 目录
 
