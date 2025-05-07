@@ -84,14 +84,17 @@ class MCPClient:
             raise ValueError("参数数量错误")
 
     async def connect_to_server(self, server_params: StdioServerParameters):
+        print(f"[SYS]: 正在链接服务器...")
         self.stdio_transport = await self.exit_stack.enter_async_context(
             stdio_client(server_params)
         )
+        print(f"[SYS]: 链接成功，正在初始化...")
         stdio_reader, stdio_writer = self.stdio_transport
-
+        print(f"[SYS]: 服务器初始化中...")
         self.session = await self.exit_stack.enter_async_context(
             ClientSession(stdio_reader, stdio_writer)
         )
+        print(f"[SYS]: 服务器初始化完成，正在连接...")
         await self.session.initialize()
 
         print(f"[SYS]: 服务器链接成功 !!!\n")
